@@ -1,0 +1,464 @@
+/* styles/Dashboard.module.css */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+.dashboardContainer {
+  display: flex;
+  min-height: 100vh;
+  font-family: 'Poppins', sans-serif; /* Usar una fuente más moderna */
+  background-color: #f0f2f5; /* Fondo general ligero */
+}
+
+/* --- Sidebar (Izquierda) --- */
+.sidebar {
+  width: 300px; /* Ancho fijo para la sidebar */
+  flex-shrink: 0; /* Evita que se encoja */
+  background: linear-gradient(160deg, #005bea, #0070f3); /* Gradiente azul */
+  color: #ffffff;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.locationHeader {
+  margin-bottom: 2rem;
+}
+
+.locationName {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.2rem;
+  display: flex;
+  align-items: center;
+}
+
+.locationIcon { /* Placeholder for a pin icon */
+    margin-right: 0.5rem;
+    opacity: 0.8;
+    /* Add styles for an actual icon here */
+}
+
+.currentDate {
+  font-size: 0.85rem;
+  opacity: 0.8;
+}
+
+.currentWeather {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.weatherIcon {
+  width: 100px; /* Tamaño del icono principal */
+  height: 100px;
+  margin: 0 auto 0.5rem auto;
+  display: block;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1)); /* Sombra suave */
+}
+
+.temperature {
+  font-size: 4rem; /* Temperatura grande */
+  font-weight: 600;
+  line-height: 1;
+}
+
+.temperature sup {
+  font-size: 1.8rem; /* Tamaño del '°C' */
+  font-weight: 400;
+  vertical-align: top;
+  margin-left: 2px;
+}
+
+.weatherDescription {
+  font-size: 1rem;
+  font-weight: 500;
+  margin-top: 0.5rem;
+  opacity: 0.9;
+  text-transform: capitalize;
+}
+
+.detailsList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  margin-top: auto; /* Empuja los detalles hacia abajo si hay espacio */
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  padding-top: 1.5rem;
+}
+
+.detailItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+
+.detailLabel {
+  opacity: 0.8;
+}
+
+.detailValue {
+  font-weight: 500;
+}
+
+/* --- Main Content (Derecha) --- */
+.mainContent {
+  flex-grow: 1;
+  padding: 2rem 2.5rem;
+  background-color: #ffffff;
+  display: flex;
+  flex-direction: column;
+}
+
+.mainHeader {
+  display: flex;
+  /* CAMBIO: De 'space-between' a 'flex-start' para alinear a la izquierda */
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem; /* Añade espacio entre el título y las acciones */
+  margin-bottom: 1.5rem;
+  /*flex-wrap: wrap;*/
+}
+
+.headerActionsContainer {
+  display: flex;
+  align-items: right;
+  gap: 1rem; /* Espacio entre búsqueda y perfil */
+  margin-left: auto; /* EMPUJA las acciones a la DERECHA (si quieres) */
+  /* --- O Elimina margin-left: auto si quieres que queden a la izquierda --- */
+  /* Si eliminas margin-left: auto, quedarán después del título */
+}
+
+
+.headerTitle {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+}
+
+.headerDate {
+  font-size: 0.9rem;
+  color: #666;
+  margin-top: 0.2rem;
+}
+
+.headerActions {
+  display: flex; /* Hijos (form y profileIcon) en línea */
+  align-items: center; /* Alinea verticalmente la búsqueda y el icono */
+  gap: 1rem; 
+}
+
+.searchForm {
+    display: flex; /* Si quieres alinear el input y el texto de carga */
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.searchBar { /* Ajusta si es necesario */
+  padding: 0.6rem 1.2rem;
+  border: 1px solid #ddd;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  min-width: 200px; /* Dale un ancho mínimo */
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.searchBar:focus {
+    outline: none;
+    border-color: #0070f3;
+    box-shadow: 0 0 0 2px rgba(0, 112, 243, 0.2);
+}
+
+.searchBar:disabled {
+    background-color: #e9ecef;
+    cursor: not-allowed;
+}
+
+.loadingTextSmall {
+  font-size: 0.8rem;
+  color: #6c757d;
+}
+
+.profileIcon { /* Placeholder */
+  width: 40px;
+  height: 40px;
+  background-color: #e9ecef; /* Un gris claro de fondo */
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;            /* Habilita Flexbox */
+  justify-content: center;  /* Centra horizontalmente */
+  align-items: center;      /* Centra verticalmente */
+  font-size: 1.2rem;        /* Tamaño de la letra */
+  font-weight: 600;         /* Peso de la letra */
+  color: #495057;          /* Color de la letra */
+  overflow: hidden;         /* Por si acaso */
+  flex-shrink: 0;  
+  /* Add user image or icon styles */
+}
+
+/* --- Forecast --- */
+.forecastSection {
+  margin-top: 1rem;
+}
+
+.forecastNav { /* Placeholder for tabs */
+  display: flex;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid #eee;
+}
+
+.navButton {
+  padding: 0.5rem 1rem;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 0.95rem;
+  color: #666;
+  margin-right: 1rem;
+  position: relative;
+  transition: color 0.2s ease;
+}
+
+.navButton:hover {
+  color: #0070f3;
+}
+
+.navButtonActive {
+  color: #0070f3;
+  font-weight: 600;
+}
+/* Simple underline for active tab */
+.navButtonActive::after {
+    content: '';
+    position: absolute;
+    bottom: -1px; /* Alineado con el borde inferior del contenedor */
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: #0070f3;
+}
+
+
+.forecastGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); /* Columnas responsivas */
+  gap: 1.5rem;
+}
+
+.forecastCard {
+  background-color: #f8f9fa; /* Fondo ligero para las cards */
+  border-radius: 10px;
+  padding: 1rem;
+  text-align: center;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.forecastCard:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+.forecastDay {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 0.5rem;
+}
+
+.forecastIcon {
+  width: 50px;
+  height: 50px;
+  margin: 0.5rem auto;
+  display: block;
+}
+
+.forecastTemp {
+  font-size: 1.3rem;
+  font-weight: 500;
+  color: #111;
+}
+.forecastTemp sup {
+  font-size: 0.8rem;
+  font-weight: 400;
+}
+
+.loadingText, .errorText {
+    text-align: center;
+    padding: 2rem;
+    font-size: 1.1rem;
+    color: #555;
+}
+
+.errorText {
+    color: #dc3545;
+}
+
+/* --- User Actions / Links --- */
+.userActions {
+    margin-top: auto; /* Empuja al final */
+    padding-top: 1.5rem;
+    border-top: 1px solid #eee;
+    display: flex;
+    gap: 1rem; /* Espacio entre botones/links */
+    justify-content: flex-end; /* Alinea a la derecha */
+}
+
+.actionButton {
+    padding: 0.6rem 1.2rem;
+    background-color: #0070f3;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    text-decoration: none; /* Para los links */
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    text-align: center;
+}
+
+.actionButton:hover {
+    background-color: #0056b3;
+}
+
+.signOutButton {
+    background-color: #dc3545; /* Rojo para cerrar sesión */
+}
+.signOutButton:hover {
+    background-color: #c82333;
+}
+
+.forecastPop {
+  font-size: 0.8rem;
+  color: #6699CC; /* Un azul suave para la probabilidad */
+  margin-top: 0.3rem;
+  font-weight: 500;
+}
+
+/* --- Responsive --- */
+@media (max-width: 768px) {
+    .dashboardContainer {
+        flex-direction: column;
+    }
+    .sidebar {
+        width: 100%;
+        height: auto; /* Altura automática */
+        border-radius: 0; /* Quita bordes redondeados si los hubiera */
+        padding: 1.5rem;
+    }
+    .mainContent {
+        padding: 1.5rem;
+    }
+    .forecastGrid {
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+        gap: 1rem;
+    }
+    .temperature {
+        font-size: 3rem;
+    }
+    .temperature sup {
+        font-size: 1.5rem;
+    }
+    .mainHeader {
+        flex-direction: column;
+        align-items: right; /* Alinea a la derecha */
+        gap: 1rem; /* Espacio entre título y acciones */
+        margin-bottom: 1.5rem;
+    }
+}
+
+.upcomingAgendaSection {
+  margin-top: 2.5rem; /* Espacio después del pronóstico */
+  padding-top: 1.5rem;
+  border-top: 1px solid #eee;
+}
+
+.sectionTitle { /* Estilo reutilizado o específico */
+    font-size: 1.3rem; /* Un poco más pequeño */
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: #333;
+}
+
+.loadingTextSmall, .emptyMessageSmall { /* Tamaños más pequeños para mensajes */
+    font-size: 0.95rem;
+    color: #777;
+    text-align: center;
+    padding: 1rem 0;
+}
+
+
+.upcomingAgendaList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex; /* Alinea horizontalmente */
+    flex-direction: column; /* Apila verticalmente */
+    gap: 0.8rem; /* Espacio entre items */
+}
+
+.upcomingAgendaItem {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem; /* Espacio interno */
+    padding: 0.8rem 1rem;
+    background-color: #f8f9fa;
+    border-radius: 6px;
+    border: 1px solid #e9ecef;
+    font-size: 0.95rem;
+    transition: background-color 0.2s ease;
+}
+.upcomingAgendaItem:hover {
+    background-color: #f1f3f5;
+}
+
+
+.upcomingDate {
+    font-weight: 500;
+    color: #555;
+    min-width: 80px; /* Ancho fijo para alinear */
+    text-align: right;
+    flex-shrink: 0;
+}
+
+.upcomingTime {
+    font-weight: 600;
+    color: #333;
+    background-color: #e9ecef;
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    flex-shrink: 0;
+}
+
+.upcomingIcon {
+    font-size: 1.3rem;
+    color: #0070f3;
+    margin-left: 0.5rem; /* Pequeño espacio después de la hora */
+}
+
+.upcomingName {
+    font-weight: 500;
+    color: #222;
+    flex-grow: 1; /* Ocupa espacio restante */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; /* Añade ... si es muy largo */
+}
+
+.viewAllLinkContainer {
+    margin-top: 1.5rem;
+    text-align: right;
+}
+
+.viewAllLink {
+    color: #0070f3;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+.viewAllLink:hover {
+    text-decoration: underline;
+}

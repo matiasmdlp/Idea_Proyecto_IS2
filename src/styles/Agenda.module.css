@@ -1,0 +1,322 @@
+/* styles/Agenda.module.css */
+
+/* Reutiliza estilos de Activities.module.css si son iguales */
+.pageContainer {
+    padding: 2rem;
+    max-width: 900px; /* Puede ser más estrecho que Activities */
+    margin: 0 auto;
+    background-color: #ffffff;
+    min-height: 100vh;
+  }
+  
+  .pageHeader {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+  }
+  
+  .pageTitle {
+    font-size: 2rem;
+    font-weight: 600;
+    color: #333;
+  }
+  
+  .actionButton {
+      padding: 0.6rem 1.2rem;
+      background-color: #0070f3;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+  }
+  .actionButton:hover {
+      background-color: #0056b3;
+  }
+  
+  
+  .backLink {
+    display: inline-block; /* Importante para padding/bordes */
+    margin-bottom: 1.5rem;
+    background-color: #0070f3;
+    color: white;         /* Color del texto/borde */
+    text-decoration: none;
+    font-weight: 500;
+    padding: 0.5rem 1rem;    /* Espaciado interno */
+    border: 1px solid #0070f3; /* Borde */
+    border-radius: 6px;      /* Bordes redondeados */
+    transition: background-color 0.2s ease, color 0.2s ease; /* Transición suave */
+  }
+  
+  .backLink:hover {
+    text-decoration: none;
+    background-color: #0056b3; /* Fondo claro al pasar el mouse */
+    /* color: #0056b3; */ /* Opcional: cambiar color de texto al pasar */
+  }
+  
+  .loading, .error, .emptyMessage {
+    text-align: center;
+    font-size: 1.1rem;
+    color: #666;
+    margin-top: 3rem;
+  }
+  
+  .error {
+    color: #dc3545;
+  }
+  
+  /* Lista de Agenda */
+  .agendaList {
+      list-style: none;
+      padding: 0;
+      margin: 2rem 0 0 0;
+  }
+  
+  .agendaItem {
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+        padding: 0.8rem 1rem; /* Menos padding vertical */
+        border: 1px solid #e9ecef;
+        display: flex; /* --- USA FLEXBOX AHORA --- */
+        align-items: center; /* Centra verticalmente los items */
+        gap: 0.8rem; /* Espacio entre los elementos principales */
+        flex-wrap: wrap;
+  }
+
+  .itemActivityInfo {
+        display: flex;
+        align-items: center; /* Asegura alineación vertical */
+        align-self: center;
+        gap: 0.6rem;
+        flex-grow: 1;
+        /* Intenta quitar cualquier padding/margin vertical explícito si lo hubiera */
+        padding: 0;
+        margin: 0;
+   }
+  
+  .itemDateTime {
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+      min-width: 120px; /* Ancho mínimo para fecha/hora */
+  }
+  
+  .itemDate {
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: #333;
+  }
+  
+  .itemTime {
+      font-size: 1rem;
+      color: #000000;
+  }
+  
+  .itemActivity {
+      display: flex;
+      align-items: center;
+      align-self: center;
+      gap: 0.7rem;
+      flex-grow: 1; /* Ocupa espacio disponible */
+      min-width: 150px;
+  }
+  
+  .itemIcon {
+        font-size: 1.6rem;
+        color: #0070f3;
+        flex-shrink: 0;
+        /* Asegura que no tenga márgenes verticales que descuadren */
+        margin-top: 0;
+        margin-bottom: 0;
+        line-height: 1; /* Ajusta si la fuente del icono tiene espacio extra */
+        display: flex; /* Para centrar el icono mismo si es necesario */
+        align-items: center;
+    }
+  
+    .itemName {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #222;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+         /* Asegura que no tenga márgenes verticales que descuadren */
+        margin-top: 0;
+        margin-bottom: 0;
+        line-height: 1.3; /* Ajusta según tu fuente */
+    }
+  
+  .itemDetails {
+      flex-basis: 100%; /* Ocupa toda la línea si hay notas/ubicación */
+      margin-top: 0.5rem;
+      padding-top: 0.5rem;
+      border-top: 1px dashed #eee; /* Separador sutil */
+      font-size: 0.85rem;
+      color: #666;
+  }
+  .itemDetails p {
+      margin: 0.3rem 0;
+  }
+  
+  .itemLocation {
+      font-style: italic;
+  }
+
+  .itemActions {
+    margin-left: auto; /* Empuja a la derecha */
+    display: flex;
+    align-items: center; /* Centra verticalmente los botones */
+    gap: 0.5rem; /* Espacio entre botones */
+    flex-shrink: 0; /* Evita que se encojan */
+}
+
+.actionButtonSmall {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.3rem;
+    margin: 0;
+    line-height: 1;
+    border-radius: 50%;
+    display: flex; /* Para centrar el icono dentro */
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s ease;
+}
+.actionButtonSmall .material-icons {
+    font-size: 1.25rem; /* Tamaño del icono */
+}
+
+.editButton {
+    color: #0d6efd; /* Azul */
+}
+.editButton:hover {
+    background-color: rgba(13, 110, 253, 0.1);
+}
+
+.deleteButton {
+     color: #dc3545; /* Rojo */
+}
+.deleteButton:hover {
+     background-color: rgba(220, 53, 69, 0.1);
+}
+
+.agendaItem {
+    /* ... estilos existentes ... */
+    display: grid; /* Cambia a Grid para mejor control */
+    grid-template-columns: auto 1fr auto; /* Columna para icono clima, contenido principal, acciones */
+    grid-template-areas:
+        "indicator datetime activity actions"
+        "indicator details details details";
+    align-items: start; /* Alinea al inicio verticalmente */
+    gap: 0.5rem 1rem; /* Espacio vertical y horizontal */
+    padding: 1rem;
+}
+
+/* --- Estilos para el Indicador de Clima --- */
+.weatherIndicator {
+    grid-area: indicator;
+    font-size: 1.4rem; /* Tamaño del icono indicador */
+    margin-right: 0.5rem; /* Espacio a la derecha */
+    flex-shrink: 0;
+    margin-top: 0.2rem; /* Ajuste vertical ligero */
+    align-self: center; /* Centra verticalmente en su celda */
+}
+
+.itemNotesInline { /* Nuevo estilo para notas en línea */
+    font-size: 0.9rem;
+    color: #555;
+    flex-basis: auto; /* Se ajusta al contenido */
+    
+     /* Opcional: limitar ancho y usar ellipsis si quieres que esté en la misma línea */
+     /* flex-shrink: 1; */
+     /* overflow: hidden; */
+     /* white-space: nowrap; */
+     /* text-overflow: ellipsis; */
+     /* max-width: 200px; */
+     margin-left: auto; /* Empuja hacia la derecha antes de los botones */
+}
+
+.itemBottomDetails {
+    flex-basis: 100%; /* Ocupa todo el ancho */
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px dashed #eee;
+    font-size: 0.85rem;
+    color: #666;
+    display: flex;
+    flex-direction: column; /* Apila los elementos */
+
+    gap: 0.3rem;
+}
+
+
+.itemBottomDetails p { margin: 0; }
+
+.itemLocation { font-style: italic; align-items: right; text-align: right;}
+
+
+.itemDateTime {
+    grid-area: datetime;
+    /* ... estilos existentes ... */
+     min-width: auto; /* Quita min-width si usas grid */
+     text-align: right;
+}
+
+
+
+.itemDetails {
+    grid-area: details;
+     /* ... estilos existentes ... */
+     border-top: none; /* Quita borde si no lo quieres */
+     padding-top: 0;
+     margin-top: 0;
+}
+
+.itemActions {
+    grid-area: actions;
+     /* ... estilos existentes ... */
+     margin-left: 0; /* Quita margen si usas grid */
+     align-self: center; /* Centra verticalmente */
+}
+
+.itemWarning { /* Estilo para razones de precaución/no_ok */
+    color: #664d03;
+    background-color: #fff3cd;
+    border: 1px solid #ffe69c;
+    border-radius: 4px;
+    padding: 0.4rem 0.6rem;
+    font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+.itemWarning .material-icons {
+    font-size: 1.1em; /* Icono un poco más grande */
+}
+
+
+/* Responsive (opcional, ajusta grid para móvil) */
+@media (max-width: 600px) {
+  .agendaItem {
+      grid-template-columns: auto 1fr; /* Icono clima y resto */
+      grid-template-areas:
+          "indicator activity"
+          "indicator datetime"
+          "details details"
+          "actions actions";
+       gap: 0.3rem 0.8rem;
+  }
+   .itemActions {
+        display: flex;
+        gap: 0.5rem;
+        margin-left: auto;
+   }
+    .itemDateTime {
+        margin-bottom: 0.3rem;
+    }
+}
+

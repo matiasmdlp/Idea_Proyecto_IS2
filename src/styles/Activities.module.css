@@ -1,0 +1,80 @@
+/* styles/Activities.module.css */
+.pageContainer {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  .pageTitle {
+    font-size: 2rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    color: #333;
+  }
+  
+  .loading, .error {
+    text-align: center;
+    font-size: 1.2rem;
+    color: #666;
+    margin-top: 3rem;
+  }
+  
+  .error {
+    color: #dc3545;
+  }
+  
+  .activitiesGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); /* Responsive grid */
+    gap: 1.5rem;
+    margin-top: 1rem;
+  }
+  
+  .sectionTitle {
+      font-size: 1.5rem;
+      font-weight: 500;
+      margin-top: 2rem;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid #eee;
+      color: #444;
+  }
+  
+  /* Estilos para botones/acciones (los añadiremos luego) */
+  .pageActions {
+      margin-bottom: 1.5rem;
+      text-align: right;
+  }
+  
+  .actionButton {
+      padding: 0.6rem 1.2rem;
+      background-color: #0070f3;
+      color: rgb(255, 255, 255);
+      border: none;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+  }
+  .actionButton:hover {
+      background-color: #0056b3;
+  }
+  
+  .backLink {
+    display: inline-block; /* Para que padding/margin funcionen bien */
+    margin-bottom: 1.5rem;
+    background-color: #0070f3;
+    color: rgb(255, 255, 255);
+    text-decoration: none;
+    font-weight: 500;
+    padding: 0.5rem 1rem; /* Añade padding si quieres apariencia de botón */
+    border: 1px solid #0070f3; /* Borde opcional */
+    border-radius: 6px; /* Bordes redondeados opcionales */
+    transition: background-color 0.2s ease, color 0.2s ease; /* Transición suave */
+  }
+  
+  .backLink:hover {
+    text-decoration: none; /* Quita subrayado al pasar si no lo quieres */
+    background-color: #0056b3; /* Fondo muy claro al pasar */
+    /* color: #0056b3; */ /* Color más oscuro al pasar (opcional) */
+  }

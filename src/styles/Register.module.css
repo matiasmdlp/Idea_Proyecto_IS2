@@ -1,0 +1,140 @@
+/* styles/Login.module.css */
+
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #0070f3; /* Un azul similar al de Next.js/Vercel */
+    padding: 1rem; /* Espacio por si el card es muy grande en pantallas pequeñas */
+  }
+  
+  .card {
+    background-color: #ffffff;
+    padding: 2.5rem 2rem; /* Más padding vertical que horizontal */
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px; /* Ancho máximo del formulario */
+    text-align: left; /* Alineación general a la izquierda dentro del card */
+  }
+  
+  .title {
+    text-align: center;
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: #111; /* Un negro suave */
+    margin-bottom: 2rem;
+  }
+  
+  .inputGroup {
+    margin-bottom: 1.25rem; /* Espacio entre grupos de input */
+  }
+  
+  .label {
+    display: block;
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+  }
+  
+  .input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 1rem;
+    box-sizing: border-box; /* Importante para que padding no aumente el tamaño */
+    transition: border-color 0.2s ease;
+  }
+  
+  .input:focus {
+    outline: none;
+    border-color: #0070f3;
+    box-shadow: 0 0 0 2px rgba(0, 112, 243, 0.2); /* Anillo de foco sutil */
+  }
+  
+  /* Grupo para checkbox y link de 'forgot password' */
+  .optionsGroup {
+    display: flex;
+    justify-content: space-between; /* Alinea items a los extremos */
+    align-items: center;
+    margin-bottom: 1.5rem;
+    font-size: 0.9rem;
+  }
+  
+  .checkboxGroup {
+    display: flex;
+    align-items: center;
+  }
+  
+  .checkbox {
+   margin-right: 0.5rem;
+   cursor: pointer;
+  }
+  
+  .checkboxLabel {
+    color: #555;
+    cursor: pointer;
+    user-select: none; /* Evita selección de texto al hacer clic */
+  }
+  
+  .forgotPasswordLink {
+    color: #0070f3;
+    text-decoration: none;
+    font-size: 0.9rem;
+  }
+  
+  .forgotPasswordLink:hover {
+    text-decoration: underline;
+  }
+  
+  
+  .submitButton {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    background-color: #0070f3;
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    font-size: 1.1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    margin-bottom: 1.5rem; /* Espacio antes del link de registro */
+  }
+  
+  .submitButton:hover {
+    background-color: #0056b3; /* Un azul más oscuro al pasar el mouse */
+  }
+  
+  .submitButton:disabled {
+      background-color: #a0c Df0; /* Azul más claro cuando está deshabilitado */
+      cursor: not-allowed;
+  }
+  
+  
+  .error {
+    color: #dc3545; /* Rojo para errores */
+    font-size: 0.9rem;
+    margin-top: -0.75rem; /* Sube un poco el mensaje de error */
+    margin-bottom: 1rem;
+    text-align: center;
+  }
+  
+  .registerLinkContainer {
+      text-align: center;
+      font-size: 0.9rem;
+      color: #555;
+  }
+  
+  .registerLink {
+    color: #0070f3;
+    text-decoration: none;
+    font-weight: 500;
+  }
+  
+  .registerLink:hover {
+    text-decoration: underline;
+  }

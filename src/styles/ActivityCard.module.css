@@ -1,0 +1,171 @@
+/* styles/ActivityCard.module.css */
+.card {
+    background-color: #8c5b5b4a;
+    border-radius: 10px;
+    padding: 1.5rem;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.07);
+    transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+    overflow: hidden; /* Para contener las preferencias expandidas */
+    cursor: default; /* Cambia si lo haces clickeable */
+    position: relative; /* Para posicionar botón editar */
+    border: 1px solid #eee;
+  }
+  
+  .card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+  }
+  
+  .cardHeader {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+  
+  .icon {
+    font-size: 1.8rem; /* Ajusta según tu librería de iconos */
+    margin-right: 0.8rem;
+    color: #0070f3;
+    /* Si usas img: */
+    /* width: 30px; height: 30px; object-fit: contain; */
+  }
+  
+  .activityName {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #222;
+  }
+  
+  .activityType {
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: #fff;
+      background-color: #6c757d; /* Gris para estándar */
+      padding: 0.15rem 0.5rem;
+      border-radius: 4px;
+      margin-left: auto; /* Empuja a la derecha */
+      white-space: nowrap;
+  }
+  .activityTypeUser {
+      background-color: #198754; /* Verde para usuario */
+  }
+  
+  
+  .activityDescription {
+    font-size: 0.9rem;
+    color: #555;
+    margin-bottom: 1rem;
+    min-height: 40px; /* Para alinear cards con descripciones de diferente largo */
+  }
+  
+  /* --- Preferencias (inicialmente ocultas o mostradas sutilmente) --- */
+  .preferencesSection {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #f0f0f0;
+    /* Transición para suavizar la aparición */
+    max-height: 0;
+    opacity: 0;
+    transition: max-height 0.4s ease-in-out, opacity 0.3s ease-in-out 0.1s;
+    overflow: hidden;
+  }
+  
+  .cardExpanded .preferencesSection {
+      max-height: 500px; /* Suficiente para mostrar contenido */
+      opacity: 1;
+  }
+  
+  .preferencesTitle {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #444;
+    margin-bottom: 0.75rem;
+  }
+  
+  .preferenceItem {
+    font-size: 0.85rem;
+    color: #666;
+    margin-bottom: 0.4rem;
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .preferenceLabel {
+    margin-right: 0.5rem;
+  }
+  .preferenceValue {
+      font-weight: 500;
+      color: #333;
+  }
+  .preferenceValueNotSet {
+      font-style: italic;
+      color: #999;
+  }
+  
+  
+  /* Botón Editar */
+  .editButton {
+      position: absolute;
+      top: 5rem;
+      right: 0.75rem;
+      background: none;
+      border: none;
+      color: #0070f3;
+      cursor: pointer;
+      font-size: 1.3rem; /* Tamaño del icono de editar */
+      padding: 0.3rem;
+      line-height: 1;
+      border-radius: 50%;
+      transition: background-color 0.2s ease;
+      opacity: 0; /* Oculto por defecto */
+      transition: opacity 0.2s ease-in-out;
+  }
+  
+   .card:hover .editButton {
+      opacity: 1; /* Visible al hacer hover en la card */
+  }
+  
+  .editButton:hover {
+      background-color: rgba(0, 112, 243, 0.1);
+  }
+  
+  /* Placeholder para icono de Material Icons */
+  .material-icons {
+      font-family: 'Material Icons';
+      font-weight: normal;
+      font-style: normal;
+      /* font-size: 24px; */ /* Adjust as needed */
+      line-height: 1;
+      letter-spacing: normal;
+      text-transform: none;
+      display: inline-block;
+      white-space: nowrap;
+      word-wrap: normal;
+      direction: ltr;
+      -webkit-font-feature-settings: 'liga';
+      -webkit-font-smoothing: antialiased;
+  }
+
+  .deleteButton {
+    position: absolute;
+    bottom: 0.75rem;
+    right: 10rem;
+    background: none;
+    border: none;
+    color: #dc3545; /* Rojo para borrar */
+    cursor: pointer;
+    font-size: 1.3rem; /* Tamaño del icono */
+    padding: 0.3rem;
+    line-height: 1;
+    border-radius: 50%;
+    transition: background-color 0.2s ease, opacity 0.2s ease-in-out;
+    opacity: 0; /* Oculto por defecto */
+}
+
+.card:hover .deleteButton {
+    opacity: 1; /* Visible al hacer hover en la card */
+}
+
+.deleteButton:hover {
+    background-color: rgba(220, 53, 69, 0.1); /* Fondo rojo claro al pasar */
+}

@@ -1,0 +1,61 @@
+.pickerContainer {
+    padding: 1rem 0;
+    max-height: 60vh; /* Permite scroll si hay muchos iconos */
+    display: flex;
+    flex-direction: column;
+}
+
+.searchInput {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    margin-bottom: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+.iconGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); /* Columnas flexibles */
+    gap: 10px;
+    overflow-y: auto; /* Scroll vertical si es necesario */
+    padding: 5px; /* Espacio para el borde/outline */
+     flex-grow: 1; /* Ocupa espacio restante */
+}
+
+.iconButton {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    background-color: #f8f9fa;
+    cursor: pointer;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+    min-height: 70px; /* Altura mínima */
+}
+
+.iconButton:hover {
+    background-color: #e9ecef;
+    border-color: #dee2e6;
+}
+
+.iconButton .material-icons {
+    font-size: 2.5rem; /* Tamaño del icono */
+    margin-bottom: 5px;
+}
+
+/* Estilo opcional para el nombre debajo del icono */
+/* .iconNameLabel {
+    font-size: 0.7rem;
+    text-align: center;
+    word-break: break-word;
+} */
+
+.iconButton.selected {
+    border-color: var(--primary-color, #0d6efd); /* Usa tu color primario */
+    background-color: var(--primary-light-color, #cfe2ff); /* Un color de fondo más claro */
+    box-shadow: 0 0 0 2px var(--primary-color, #0d6efd);
+}

@@ -1,0 +1,157 @@
+/* components/ModalStyles.css */
+.ReactModal__Overlay {
+    opacity: 0;
+    transition: opacity 300ms ease-in-out;
+    background-color: rgba(0, 0, 0, 0.6);
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1000; /* Asegura que esté por encima */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .ReactModal__Overlay--after-open{
+    opacity: 1;
+  }
+  
+  .ReactModal__Overlay--before-close{
+    opacity: 0;
+  }
+  
+  .ModalContent {
+    background: #ffffff;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    max-width: 600px; /* Ancho máximo */
+    width: 90%; /* Responsivo */
+    max-height: 90vh; /* Altura máxima */
+    overflow-y: auto; /* Scroll si el contenido es largo */
+    position: relative; /* Para el botón de cerrar */
+    outline: none; /* Quita borde de foco por defecto */
+  }
+  
+  .ModalHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .ModalTitle {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+  }
+  
+  .CloseButton {
+    background: none;
+    border: none;
+    font-size: 1.8rem;
+    line-height: 1;
+    cursor: pointer;
+    color: #888;
+    padding: 0.2rem;
+  }
+  .CloseButton:hover {
+      color: #333;
+  }
+  
+  
+  /* Estilos básicos para formularios dentro del modal */
+  .ModalForm {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* 2 columnas si hay espacio */
+      gap: 1rem 1.5rem; /* Espacio vertical y horizontal */
+  }
+  
+  .FormGroup {
+      display: flex;
+      flex-direction: column;
+  }
+  
+  .FormLabel {
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: #444;
+      margin-bottom: 0.4rem;
+  }
+  
+  .FormInput, .FormSelect, .FormTextarea {
+      width: 100%;
+      padding: 0.6rem 0.8rem;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 0.95rem;
+  }
+  .FormInput:focus, .FormSelect:focus, .FormTextarea:focus {
+      outline: none;
+      border-color: #0070f3;
+      box-shadow: 0 0 0 2px rgba(0, 112, 243, 0.2);
+  }
+  
+  .FormCheckboxGroup {
+      display: flex;
+      align-items: center;
+      margin-top: 0.5rem; /* Alinea con otros inputs */
+  }
+  .FormCheckbox {
+      margin-right: 0.5rem;
+      width: 1rem;
+      height: 1rem;
+  }
+  
+  
+  .ModalActions {
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid #eee;
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.8rem;
+  }
+  
+  .ModalButton {
+    padding: 0.7rem 1.5rem;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease, opacity 0.2s ease;
+  }
+  
+  .ModalButtonPrimary {
+    background-color: #0070f3;
+    color: white;
+  }
+  .ModalButtonPrimary:hover {
+    background-color: #0056b3;
+  }
+  .ModalButtonPrimary:disabled {
+      background-color: #a0cdf0;
+      cursor: not-allowed;
+  }
+  
+  
+  .ModalButtonSecondary {
+    background-color: #e9ecef;
+    color: #333;
+    border: 1px solid #ced4da;
+  }
+  .ModalButtonSecondary:hover {
+    background-color: #dee2e6;
+  }
+  
+  .ModalError {
+      color: #dc3545;
+      font-size: 0.9rem;
+      margin-top: 1rem;
+      text-align: center;
+  }

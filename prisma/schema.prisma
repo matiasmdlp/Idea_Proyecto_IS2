@@ -1,0 +1,141 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                      BigInt                        @id @default(autoincrement())
+  email                   String                        @unique @db.VarChar(255)
+  password                String                        @db.VarChar(255)
+  username                String?                       @unique @db.VarChar(50) // Optional username
+  defaultLatitude         Decimal?                      @db.Decimal(10, 8)
+  defaultLongitude        Decimal?                      @db.Decimal(11, 8)
+  createdAt               DateTime                      @default(now()) @db.Timestamp(6) // Prisma uses 6 precision by default
+  updatedAt               DateTime                      @updatedAt @db.Timestamp(6)
+
+  activities              Activity[]
+  preferences             UserActivityPreference[]
+  agendaItems             Agenda[]                      @relation("UserAgendaItems") // Explicit relation name
+
+  // NextAuth specific fields (needed for adapter)
+  accounts Account[]
+  sessions Session[]
+
+  @@map("user") // Maps to the "user" table in the database
+}
+
+model Activity {
+  id            BigInt                        @id @default(autoincrement())
+  userId        BigInt?                       // Can be nullable if some activities are "global" or predefined without a user
+  name          String                        @db.VarChar(100)
+  description   String?                       @db.Text
+  iconName      String?                       @db.VarChar(50)
+  createdAt     DateTime                      @default(now()) @db.Timestamp(6)
+
+  user          User?                         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  preferences   UserActivityPreference[]
+  agendaItems   Agenda[]                      @relation("ActivityAgendaItems") // Explicit relation name
+
+  @@unique([name, userId]) // Composite unique constraint
+  @@index([userId]) // Index for user_id
+  @@map("activities") // Maps to the "activities" table
+}
+
+model UserActivityPreference {
+  preferencesId            BigInt      @id @default(autoincrement())
+  userId                   BigInt
+  activityId               BigInt
+  minTemp                  Int?        @db.SmallInt
+  maxTemp                  Int?        @db.SmallInt
+  maxWindSpeed             Int?        @db.SmallInt
+  maxPrecipitationProbability Int?     @db.SmallInt
+  maxPrecipitationIntensity Decimal?   @db.Decimal(4, 2)
+  requiresNoPrecipitation  Boolean     @default(false)
+  maxUv                    Int?        @db.SmallInt
+  isActive                 Boolean     @default(true)
+  createdAt                DateTime    @default(now()) @db.Timestamp(6)
+  updatedAt                DateTime    @updatedAt @db.Timestamp(6)
+
+  user                     User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  activity                 Activity    @relation(fields: [activityId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, activityId])
+  @@index([userId])
+  @@index([activityId])
+  @@map("user_activity_preferences") // Maps to the table
+}
+
+model Agenda {
+  id                    BigInt      @id @default(autoincrement())
+  userId                BigInt
+  activityId            BigInt
+  periodicidad          Int         @default(0) // Consider using an Enum if values are fixed
+  fecha                 DateTime    @db.Date // Prisma handles Date type
+  horaInicio            DateTime    @db.Time // Prisma handles Time type
+  horaFin               DateTime    @db.Time // Prisma handles Time type
+  notes                 String?     @db.Text
+  locationLatitude      Decimal?    @db.Decimal(10, 8)
+  locationLongitude     Decimal?    @db.Decimal(11, 8)
+  reminderEnabled       Boolean     @default(false)
+  reminderOffsetMinutes Int?
+  createdAt             DateTime    @default(now()) @db.Timestamp(6)
+  updatedAt             DateTime    @updatedAt @db.Timestamp(6)
+
+  user                  User        @relation("UserAgendaItems", fields: [userId], references: [id], onDelete: Cascade)
+  activity              Activity    @relation("ActivityAgendaItems", fields: [activityId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([fecha])
+  @@map("Agenda") // Maps to the table
+  // Note: The CHECK constraint (hora_fin > hora_inicio) needs to be handled in application logic or manually added via a custom migration if strictly needed. Prisma doesn't directly model CHECK constraints in the schema file itself.
+}
+
+
+// --- NextAuth Models ---
+// Add these models required by the @next-auth/prisma-adapter
+
+model Account {
+  id                 String  @id @default(cuid())
+  userId             BigInt
+  type               String
+  provider           String
+  providerAccountId  String
+  refresh_token      String?  @db.Text
+  access_token       String?  @db.Text
+  expires_at         Int?
+  token_type         String?
+  scope              String?
+  id_token           String?  @db.Text
+  session_state      String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts") // Optional: map to your preferred table name
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       BigInt
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions") // Optional: map to your preferred table name
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens") // Optional: map to your preferred table name
+}

@@ -210,12 +210,12 @@ export default function AgendaModal({
                 <button onClick={onClose} className="CloseButton" disabled={loading || loadingWeather}>×</button>
             </div>
 
-            <div className={styles.pageContainer} style={{padding: 0, maxHeight: '75vh', overflowY: 'auto'}}>
+            <div className={styles.pageContainer} style={{padding: 0, maxHeight: '75vh', overflowY: 'auto', margin: '0 6.5rem'}}>
                 <div className={styles.modalContentArea} style={{paddingTop: '0.5rem', position: 'sticky', top: 0, background: 'white', zIndex: 1}}>
                     <div style={{
-                    flexGrow: 1, // Para que ocupe el espacio vertical
-                    overflowY: 'auto', // Para el scroll interno
-                    padding: '0 1.5rem 1.5rem 1.5rem' // Padding interno para el contenido
+                        flexGrow: 1, // Para que ocupe el espacio vertical
+                        overflowY: 'auto', // Para el scroll interno
+                        padding: '0 1.5rem 1.5rem 1.5rem' // Padding interno para el contenido
                     }}></div>
                     <button onClick={() => handleOpenEventFormModal()} className={styles.actionButton} disabled={loading}>
                         + Agendar Actividad

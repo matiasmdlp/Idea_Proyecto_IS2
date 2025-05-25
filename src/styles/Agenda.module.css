@@ -71,11 +71,11 @@
   }
   
   .agendaItem {
-        background-color: #f8f9fa;
+        background-color: #b3d9ff69;
         border-radius: 8px;
         margin-bottom: 1rem;
         padding: 0.8rem 1rem; 
-        border: 1px solid #e9ecef;
+        border: 2px solid #00000015;
         display: flex; 
         align-items: center; 
         gap: 0.8rem; 

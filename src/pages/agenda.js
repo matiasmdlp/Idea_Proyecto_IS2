@@ -1,4 +1,4 @@
-// pages/agenda.js
+
 import React, { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
@@ -10,7 +10,6 @@ import styles from '@/styles/Agenda.module.css'; // Crear este archivo
 import commonModalStyles from '../components/ModalStyles.css'; // Estilos comunes de modal
 import { filterFutureAgendaItemsByEndTime } from '@/lib/filters'; 
 
-// Función helper para formatear fecha/hora (simplificada)
 
 const formatDisplayTime = (timeStr) => { // <-- AÑADE ESTA FUNCIÓN
     if (!timeStr || typeof timeStr !== 'string') {

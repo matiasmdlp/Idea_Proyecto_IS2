@@ -1,5 +1,12 @@
+// src/pages/_app.js
 import { SessionProvider } from "next-auth/react";
-import '@/styles/globals.css'; // Asumiendo que tienes este archivo para estilos globales
+import Modal from 'react-modal'; // Importar Modal
+import '@/styles/globals.css';
+
+// Configurar el appElement para react-modal
+if (typeof window !== 'undefined') {
+  Modal.setAppElement('#__next');
+}
 
 function MyApp({ Component, pageProps: { session, ...pageProps } }) {
   return (

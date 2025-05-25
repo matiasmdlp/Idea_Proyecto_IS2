@@ -1,9 +1,6 @@
-/* styles/Agenda.module.css */
-
-/* Reutiliza estilos de Activities.module.css si son iguales */
 .pageContainer {
     padding: 2rem;
-    max-width: 900px; /* Puede ser más estrecho que Activities */
+    max-width: 900px; 
     margin: 0 auto;
     background-color: #ffffff;
     min-height: 100vh;
@@ -38,22 +35,21 @@
   
   
   .backLink {
-    display: inline-block; /* Importante para padding/bordes */
+    display: inline-block; 
     margin-bottom: 1.5rem;
     background-color: #0070f3;
-    color: white;         /* Color del texto/borde */
+    color: white;         
     text-decoration: none;
     font-weight: 500;
-    padding: 0.5rem 1rem;    /* Espaciado interno */
-    border: 1px solid #0070f3; /* Borde */
-    border-radius: 6px;      /* Bordes redondeados */
-    transition: background-color 0.2s ease, color 0.2s ease; /* Transición suave */
+    padding: 0.5rem 1rem;    
+    border: 1px solid #0070f3; 
+    border-radius: 6px;      
+    transition: background-color 0.2s ease, color 0.2s ease;
   }
   
   .backLink:hover {
     text-decoration: none;
-    background-color: #0056b3; /* Fondo claro al pasar el mouse */
-    /* color: #0056b3; */ /* Opcional: cambiar color de texto al pasar */
+    background-color: #0056b3; 
   }
   
   .loading, .error, .emptyMessage {
@@ -67,7 +63,7 @@
     color: #dc3545;
   }
   
-  /* Lista de Agenda */
+  
   .agendaList {
       list-style: none;
       padding: 0;
@@ -78,21 +74,20 @@
         background-color: #f8f9fa;
         border-radius: 8px;
         margin-bottom: 1rem;
-        padding: 0.8rem 1rem; /* Menos padding vertical */
+        padding: 0.8rem 1rem; 
         border: 1px solid #e9ecef;
-        display: flex; /* --- USA FLEXBOX AHORA --- */
-        align-items: center; /* Centra verticalmente los items */
-        gap: 0.8rem; /* Espacio entre los elementos principales */
+        display: flex; 
+        align-items: center; 
+        gap: 0.8rem; 
         flex-wrap: wrap;
   }
 
   .itemActivityInfo {
         display: flex;
-        align-items: center; /* Asegura alineación vertical */
+        align-items: center; 
         align-self: center;
         gap: 0.6rem;
         flex-grow: 1;
-        /* Intenta quitar cualquier padding/margin vertical explícito si lo hubiera */
         padding: 0;
         margin: 0;
    }
@@ -101,7 +96,7 @@
       display: flex;
       flex-direction: column;
       gap: 0.2rem;
-      min-width: 120px; /* Ancho mínimo para fecha/hora */
+      min-width: 120px; 
   }
   
   .itemDate {
@@ -120,7 +115,7 @@
       align-items: center;
       align-self: center;
       gap: 0.7rem;
-      flex-grow: 1; /* Ocupa espacio disponible */
+      flex-grow: 1; 
       min-width: 150px;
   }
   
@@ -128,11 +123,10 @@
         font-size: 1.6rem;
         color: #0070f3;
         flex-shrink: 0;
-        /* Asegura que no tenga márgenes verticales que descuadren */
         margin-top: 0;
         margin-bottom: 0;
-        line-height: 1; /* Ajusta si la fuente del icono tiene espacio extra */
-        display: flex; /* Para centrar el icono mismo si es necesario */
+        line-height: 1; 
+        display: flex; 
         align-items: center;
     }
   
@@ -143,17 +137,16 @@
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-         /* Asegura que no tenga márgenes verticales que descuadren */
         margin-top: 0;
         margin-bottom: 0;
-        line-height: 1.3; /* Ajusta según tu fuente */
+        line-height: 1.3; 
     }
   
   .itemDetails {
-      flex-basis: 100%; /* Ocupa toda la línea si hay notas/ubicación */
+      flex-basis: 100%; 
       margin-top: 0.5rem;
       padding-top: 0.5rem;
-      border-top: 1px dashed #eee; /* Separador sutil */
+      border-top: 1px dashed #eee; 
       font-size: 0.85rem;
       color: #666;
   }
@@ -166,11 +159,11 @@
   }
 
   .itemActions {
-    margin-left: auto; /* Empuja a la derecha */
+    margin-left: auto; 
     display: flex;
-    align-items: center; /* Centra verticalmente los botones */
-    gap: 0.5rem; /* Espacio entre botones */
-    flex-shrink: 0; /* Evita que se encojan */
+    align-items: center; 
+    gap: 0.5rem; 
+    flex-shrink: 0; 
 }
 
 .actionButtonSmall {
@@ -181,74 +174,65 @@
     margin: 0;
     line-height: 1;
     border-radius: 50%;
-    display: flex; /* Para centrar el icono dentro */
+    display: flex; 
     align-items: center;
     justify-content: center;
     transition: background-color 0.2s ease;
 }
 .actionButtonSmall .material-icons {
-    font-size: 1.25rem; /* Tamaño del icono */
+    font-size: 1.25rem; 
 }
 
 .editButton {
-    color: #0d6efd; /* Azul */
+    color: #0d6efd; 
 }
 .editButton:hover {
     background-color: rgba(13, 110, 253, 0.1);
 }
 
 .deleteButton {
-     color: #dc3545; /* Rojo */
+     color: #dc3545; 
 }
 .deleteButton:hover {
      background-color: rgba(220, 53, 69, 0.1);
 }
 
 .agendaItem {
-    /* ... estilos existentes ... */
-    display: grid; /* Cambia a Grid para mejor control */
-    grid-template-columns: auto 1fr auto; /* Columna para icono clima, contenido principal, acciones */
+    display: grid; 
+    grid-template-columns: auto 1fr auto; 
     grid-template-areas:
         "indicator datetime activity actions"
         "indicator details details details";
-    align-items: start; /* Alinea al inicio verticalmente */
-    gap: 0.5rem 1rem; /* Espacio vertical y horizontal */
+    align-items: start; 
+    gap: 0.5rem 1rem; 
     padding: 1rem;
 }
 
-/* --- Estilos para el Indicador de Clima --- */
 .weatherIndicator {
     grid-area: indicator;
-    font-size: 1.4rem; /* Tamaño del icono indicador */
-    margin-right: 0.5rem; /* Espacio a la derecha */
+    font-size: 1.4rem; 
+    margin-right: 0.5rem; 
     flex-shrink: 0;
-    margin-top: 0.2rem; /* Ajuste vertical ligero */
-    align-self: center; /* Centra verticalmente en su celda */
+    margin-top: 0.2rem; 
+    align-self: center; 
 }
 
-.itemNotesInline { /* Nuevo estilo para notas en línea */
+.itemNotesInline { 
     font-size: 0.9rem;
     color: #555;
-    flex-basis: auto; /* Se ajusta al contenido */
-    
-     /* Opcional: limitar ancho y usar ellipsis si quieres que esté en la misma línea */
-     /* flex-shrink: 1; */
-     /* overflow: hidden; */
-     /* white-space: nowrap; */
-     /* text-overflow: ellipsis; */
-     /* max-width: 200px; */
-     margin-left: auto; /* Empuja hacia la derecha antes de los botones */
+    flex-basis: auto; 
+     margin-left: auto; 
 }
 
 .itemBottomDetails {
-    flex-basis: 100%; /* Ocupa todo el ancho */
+    flex-basis: 100%; 
     margin-top: 0.5rem;
     padding-top: 0.5rem;
     border-top: 1px dashed #eee;
     font-size: 0.85rem;
     color: #666;
     display: flex;
-    flex-direction: column; /* Apila los elementos */
+    flex-direction: column; 
 
     gap: 0.3rem;
 }
@@ -261,8 +245,7 @@
 
 .itemDateTime {
     grid-area: datetime;
-    /* ... estilos existentes ... */
-     min-width: auto; /* Quita min-width si usas grid */
+     min-width: auto; 
      text-align: right;
 }
 
@@ -270,20 +253,18 @@
 
 .itemDetails {
     grid-area: details;
-     /* ... estilos existentes ... */
-     border-top: none; /* Quita borde si no lo quieres */
+     border-top: none; 
      padding-top: 0;
      margin-top: 0;
 }
 
 .itemActions {
     grid-area: actions;
-     /* ... estilos existentes ... */
-     margin-left: 0; /* Quita margen si usas grid */
-     align-self: center; /* Centra verticalmente */
+     margin-left: 0; 
+     align-self: center; 
 }
 
-.itemWarning { /* Estilo para razones de precaución/no_ok */
+.itemWarning { 
     color: #664d03;
     background-color: #fff3cd;
     border: 1px solid #ffe69c;
@@ -295,14 +276,13 @@
     gap: 0.3rem;
 }
 .itemWarning .material-icons {
-    font-size: 1.1em; /* Icono un poco más grande */
+    font-size: 1.1em; 
 }
 
 
-/* Responsive (opcional, ajusta grid para móvil) */
 @media (max-width: 600px) {
   .agendaItem {
-      grid-template-columns: auto 1fr; /* Icono clima y resto */
+      grid-template-columns: auto 1fr; 
       grid-template-areas:
           "indicator activity"
           "indicator datetime"

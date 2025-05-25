@@ -1,80 +1,107 @@
-/* styles/Activities.module.css */
 .pageContainer {
-    padding: 2rem;
-    max-width: 1200px;
-    margin: 0 auto;
-  }
-  
-  .pageTitle {
-    font-size: 2rem;
-    font-weight: 600;
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.pageTitle {
+  font-size: 2rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  color: #333;
+}
+
+.loading, .emptyMessage { /* Mensajes de carga o vacío */
+  text-align: center;
+  padding: 3rem 1rem; /* Más padding vertical */
+  font-size: 1.1rem;
+  color: #6c757d; /* Gris suave */
+}
+
+.error {
+  color: #721c24; /* Rojo oscuro para texto */
+  background-color: #f8d7da; /* Fondo rosa claro */
+  border: 1px solid #f5c6cb; /* Borde rojo claro */
+  padding: 1rem;
+  border-radius: 4px;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  font-size: 0.95rem;
+}
+
+.activitiesGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); /* Prueba con 280px o 300px */
+  gap: 1.5rem;
+}
+
+.modalContentArea {
+  flex-grow: 1;
+  overflow-y: auto;
+  padding: 0 1.5rem 1.5rem 1.5rem; /* Ajusta el padding según necesites */
+}
+
+/* pageHeaderActions es el contenedor del botón "+ Crear Actividad" DENTRO del área de contenido */
+.pageHeaderActions {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #eee; /* Opcional, si quieres separador */
+  margin-bottom: 1.5rem; /* Espacio antes de la primera sección de actividades */
+}
+
+.sectionTitle {
+  font-size: 1.25rem; /* Ligeramente más pequeño para modal */
+  font-weight: 600;
+  margin-top: 1.5rem; 
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.sectionTitle:first-of-type { /* Para el primer título después del header de acciones */
+  margin-top: 0;
+}
+
+.pageActions {
     margin-bottom: 1.5rem;
-    color: #333;
-  }
-  
-  .loading, .error {
-    text-align: center;
-    font-size: 1.2rem;
-    color: #666;
-    margin-top: 3rem;
-  }
-  
-  .error {
-    color: #dc3545;
-  }
-  
-  .activitiesGrid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); /* Responsive grid */
-    gap: 1.5rem;
-    margin-top: 1rem;
-  }
-  
-  .sectionTitle {
-      font-size: 1.5rem;
-      font-weight: 500;
-      margin-top: 2rem;
-      margin-bottom: 1rem;
-      padding-bottom: 0.5rem;
-      border-bottom: 1px solid #eee;
-      color: #444;
-  }
-  
-  /* Estilos para botones/acciones (los añadiremos luego) */
-  .pageActions {
-      margin-bottom: 1.5rem;
-      text-align: right;
-  }
-  
-  .actionButton {
-      padding: 0.6rem 1.2rem;
-      background-color: #0070f3;
-      color: rgb(255, 255, 255);
-      border: none;
-      border-radius: 6px;
-      font-size: 0.9rem;
-      cursor: pointer;
-      transition: background-color 0.2s ease;
-  }
-  .actionButton:hover {
-      background-color: #0056b3;
-  }
-  
-  .backLink {
-    display: inline-block; /* Para que padding/margin funcionen bien */
-    margin-bottom: 1.5rem;
-    background-color: #0070f3;
-    color: rgb(255, 255, 255);
-    text-decoration: none;
-    font-weight: 500;
-    padding: 0.5rem 1rem; /* Añade padding si quieres apariencia de botón */
-    border: 1px solid #0070f3; /* Borde opcional */
-    border-radius: 6px; /* Bordes redondeados opcionales */
-    transition: background-color 0.2s ease, color 0.2s ease; /* Transición suave */
-  }
-  
-  .backLink:hover {
-    text-decoration: none; /* Quita subrayado al pasar si no lo quieres */
-    background-color: #0056b3; /* Fondo muy claro al pasar */
-    /* color: #0056b3; */ /* Color más oscuro al pasar (opcional) */
-  }
+    text-align: right;
+}
+
+.actionButton { /* Para el botón "+ Crear Actividad" y otros similares si los hubiera */
+  background-color: #007bff;
+  color: white;
+  padding: 0.5rem 1rem; /* Ajusta padding */
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.9rem; /* Ajusta tamaño de fuente */
+  font-weight: 500;
+  transition: background-color 0.2s ease-in-out;
+}
+.actionButton:hover {
+  background-color: #0056b3;
+}
+.actionButton:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.backLink {
+  display: inline-block; 
+  margin-bottom: 1.5rem;
+  background-color: #0070f3;
+  color: rgb(255, 255, 255);
+  text-decoration: none;
+  font-weight: 500;
+  padding: 0.5rem 1rem; 
+  border: 1px solid #0070f3;
+  border-radius: 6px; 
+  transition: background-color 0.2s ease, color 0.2s ease; 
+}
+
+.backLink:hover {
+  text-decoration: none; 
+  background-color: #0056b3; 
+}
+

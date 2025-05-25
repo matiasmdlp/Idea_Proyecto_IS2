@@ -1,349 +1,290 @@
 // pages/index.js
 import React, { useState, useEffect } from 'react';
-import { getSession, useSession, signOut } from 'next-auth/react'; // Importa getSession
+import { getSession, useSession, signOut } from 'next-auth/react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
-import Link from 'next/link';
-import prisma from '@/lib/prisma'; // Importa Prisma para llamadas directas
+// Link ya no es necesario para los botones que abren modales
+import prisma from '@/lib/prisma';
 import UpcomingAgendaItem from '@/components/UpcomingAgendaItem';
 import styles from '../styles/Dashboard.module.css';
 import { filterFutureAgendaItemsByEndTime } from '@/lib/filters';
 
+// --- NUEVAS IMPORTACIONES ---
+import ActivitiesModal from '@/components/ActivitiesModal';
+import AgendaModal from '@/components/AgendaModal';
+// --- FIN NUEVAS IMPORTACIONES ---
 
-const formatDisplayTime = (timeStr) => { // <-- AÑADE ESTA FUNCIÓN COMPLETA
-  if (!timeStr || typeof timeStr !== 'string') {
-       return "Inválida";
-  }
+
+const formatDisplayTime = (timeStr) => {
+  if (!timeStr || typeof timeStr !== 'string') return "Inválida";
   try {
-      const match = timeStr.match(/^(\d{2}:\d{2})/); // Extrae HH:MM
-      if (match && match[1]) {
-          return match[1];
-      }
-      return "Inválida";
-  } catch (e) {
-       return "Inválida";
-  }
+      const match = timeStr.match(/^(\d{2}:\d{2})/);
+      return match ? match[1] : "Inválida";
+  } catch (e) { return "Inválida"; }
 };
-
 
 const formatDate = (dateStr) => {
-  // Log de entrada
-
-  // 1. Chequeo inicial de nulidad/tipo
-  if (!dateStr || typeof dateStr !== 'string') {
-      return "Fecha inválida";
-  }
-
+  if (!dateStr || typeof dateStr !== 'string') return "Fecha inválida";
   try {
-    const parts = dateStr.split('-'); // Divide "YYYY-MM-DD" en partes
-    if (parts.length !== 3) {
-        return "Formato inválido";
-    }
-
-    // parseInt para obtener números (base 10)
+    const parts = dateStr.split('-');
+    if (parts.length !== 3) return "Formato inválido";
     const year = parseInt(parts[0], 10);
-    const month = parseInt(parts[1], 10) - 1; // Meses en JS son 0-11
+    const month = parseInt(parts[1], 10) - 1;
     const day = parseInt(parts[2], 10);
-
-    // Verifica si los números son válidos
-    if (isNaN(year) || isNaN(month) || isNaN(day) || month < 0 || month > 11) {
-         return "Fecha num. inválida";
-    }
-
-    // Crea el objeto Date usando los números (más fiable)
-    // new Date(year, month, day) interpreta en zona horaria local
+    if (isNaN(year) || isNaN(month) || isNaN(day) || month < 0 || month > 11) return "Fecha num. inválida";
     const date = new Date(year, month, day);
-
-    // Doble chequeo por si acaso (ej. día 31 en febrero)
-    if (isNaN(date.getTime())) {
-       return "Fecha inválida final";
-    }
-    // --- FIN PARSEO MANUAL ---
-
-
-    // Ahora formatea el objeto Date que sabemos que es válido
-    const formatted = date.toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short' });
-    return formatted;
-
-  } catch (e) {
-      return "Fecha inválida"; // Devuelve en caso de error inesperado
-  }
+    if (isNaN(date.getTime())) return "Fecha inválida final";
+    return date.toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short' });
+  } catch (e) { return "Fecha inválida"; }
 };
 
-const formatDay = (dateObj) => { // Recibirá objeto Date
+const formatDay = (dateObj) => {
   if (!dateObj || !(dateObj instanceof Date)) return '?';
-   return dateObj.toLocaleDateString('es-ES', { weekday: 'short' });
-}
+  return dateObj.toLocaleDateString('es-ES', { weekday: 'short' });
+};
 
 export default function HomePage({
-  initialWeatherData,
-  initialUpcomingAgenda,
-  initialUserPreferences, // <-- Recibe preferencias
+  // Ya no recibimos initialWeatherData, initialUpcomingAgenda, initialUserPreferences directamente de SSR para el modal
+  // Mantenemos los que usa el dashboard directamente.
+  initialUpcomingAgenda, // Sigue siendo útil para el dashboard
+  initialUserPreferences, // Sigue siendo útil para el dashboard
   initialError
 }) {
-    console.log("Initial Upcoming Agenda (SSR):", initialUpcomingAgenda);
+  console.log("Initial Upcoming Agenda (SSR for Dashboard):", initialUpcomingAgenda);
   const { data: session, status } = useSession();
   const router = useRouter();
 
-  // --- Estados (Inicializados con props) ---
-  const [location, setLocation] = useState({ lat: null, lon: null, source: 'server' }); // Fuente inicial
-  const [weatherData, setWeatherData] = useState(initialWeatherData);
-  const [upcomingAgenda, setUpcomingAgenda] = useState(initialUpcomingAgenda);
-  const [userPreferences, setUserPreferences] = useState(initialUserPreferences || {}); // <-- Inicializa con prop o vacío
-  const [loading, setLoading] = useState(false); // Carga para fetches del cliente
+  const [upcomingAgenda, setUpcomingAgenda] = useState(initialUpcomingAgenda || []);
+  const [weatherData, setWeatherData] = useState(null);
+  const [userPreferencesState, setUserPreferencesState] = useState(initialUserPreferences || {}); // Renombrar para evitar conflicto
+  const [loadingDashboard, setLoadingDashboard] = useState(true);
   const [error, setError] = useState(initialError);
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearching, setIsSearching] = useState(false);
   const [currentDate] = useState(new Date());
   const [forecastViewMode, setForecastViewMode] = useState('daily');
-  const [currentLocationTarget, setCurrentLocationTarget] = useState(null); // Puede ser {lat, lon} o {city}
+  const [currentLocationTarget, setCurrentLocationTarget] = useState(null);
+  const [isActivitiesModalOpen, setIsActivitiesModalOpen] = useState(false);
+  const [isAgendaModalOpen, setIsAgendaModalOpen] = useState(false);
+  
+  // --- FUNCIÓN PARA REFESCAR PRÓXIMAS ACTIVIDADES DEL DASHBOARD ---
+  const refreshUpcomingAgendaForDashboard = async () => {
+    if (status !== 'authenticated') return;
+    console.log("[HomePage] Refreshing upcoming agenda for dashboard...");
+    try {
+      // Podrías añadir un estado de loading específico para esta sección si quieres
+      const res = await fetch('/api/agenda/upcoming');
+      if (res.ok) {
+        const data = await res.json();
+        setUpcomingAgenda(data);
+        console.log("[HomePage] Upcoming agenda refreshed, items:", data.length);
+      } else {
+        console.error("[HomePage] Failed to refresh upcoming agenda:", res.status);
+      }
+    } catch (err) {
+      console.error("[HomePage] Error refreshing upcoming agenda:", err);
+    }
+  };
+  
 
+
+  // Lógica de ubicación y fetch de datos del dashboard (similar a antes)
   useEffect(() => {
-    if (status === 'authenticated' && !initialWeatherData && !initialError) { // Si SSR no trajo datos válidos
-      // Intenta obtener ubicación del navegador o usa default
+    // ... (lógica de geolocalización)
+    if (status === 'authenticated') {
       if ("geolocation" in navigator) {
           navigator.geolocation.getCurrentPosition(
-              (pos) => setCurrentLocationTarget({ lat: pos.coords.latitude, lon: pos.coords.longitude }),
-              () => setCurrentLocationTarget({ lat: 40.4168, lon: -3.7038 }) // Fallback Madrid
+              (pos) => setCurrentLocationTarget({ lat: pos.coords.latitude, lon: pos.coords.longitude, source: 'browser_dashboard' }),
+              () => setCurrentLocationTarget({ lat: -36.82699, lon: -73.04977, source: 'default_dashboard' }) 
           );
       } else {
-          setCurrentLocationTarget({ lat: 40.4168, lon: -3.7038 }); // Fallback Madrid
+          setCurrentLocationTarget({ lat: -36.82699, lon: -73.04977, source: 'default_dashboard' });
       }
-    } else if (initialWeatherData?.location) {
-          // Usa la ubicación de los datos iniciales del servidor
-          setCurrentLocationTarget({ lat: initialWeatherData.location.lat, lon: initialWeatherData.location.lon });
+    } else if (status === 'unauthenticated') {
+      router.push('/login');
     }
-  }, [status, session, initialWeatherData, initialError]);
+  }, [status, router]);
 
 
-  // --- Obtener Ubicación ---
   useEffect(() => {
-    console.log("Effect Triggered! Target:", currentLocationTarget, "Status:", status);
     if (currentLocationTarget && status === 'authenticated') {
-      console.log("Effect Condition Met! Fetching data...");
-      setLoading(true);
+      setLoadingDashboard(true); 
       setError(null);
-      setWeatherData(null); // Limpia datos viejos
-      setUpcomingAgenda([]); // Limpia agenda vieja
-
-      const fetchDataForTarget = async () => {
+      
+      const fetchDataForDashboard = async () => {
+          // ... (lógica de queryParams)
           let queryParams = '';
           if (currentLocationTarget.lat && currentLocationTarget.lon) {
               queryParams = `lat=${currentLocationTarget.lat}&lon=${currentLocationTarget.lon}`;
           } else if (currentLocationTarget.city) {
               queryParams = `city=${encodeURIComponent(currentLocationTarget.city)}`;
           } else {
-               setLoading(false);
-               return; // No hacer fetch si no hay target
+               setLoadingDashboard(false); return;
           }
-          if (!queryParams) {
-            console.log("Effect: No valid query params, exiting fetch."); // <-- Log 3
-            setLoading(false);
-            setIsSearching(false); // Reset here too if exiting early
-            return;
-          }
-
-          console.log("Effect: Fetching with params:", queryParams); // <-- Log 4
-          
-          let weatherError = null; let agendaError = null;
-          let weatherResult = null; let agendaResult = [];
-
           try {
-               const [weatherRes, upcomingAgendaRes] = await Promise.all([
-                   fetch(`/api/weather/data?${queryParams}`), // Pasa lat/lon O city
-                   fetch(`/api/agenda/upcoming`)
-               ]);
-               console.log("Effect: Fetch Response Status - Weather:", weatherRes.status, "Agenda:", upcomingAgendaRes.status);
-               // Procesar Clima
-               let weatherResult = null;
+               const weatherRes = await fetch(`/api/weather/data?${queryParams}`);
                if (weatherRes.ok) {
-                weatherResult = await weatherRes.json();
-                console.log("Effect: Weather data fetched:", weatherResult); // <-- Log 6
-                setWeatherData(weatherResult);
-                } else {
-                    const errorText = await weatherRes.text();
-                    console.error("Effect: Weather fetch failed:", weatherRes.status, errorText); // <-- Log 7
-                    setError(prev => `${prev ? prev + '; ' : ''}Error clima ${weatherRes.status}`);
-                }
-
-              // Procesar Agenda
-              if (!upcomingAgendaRes.ok) { /* ... */ } else { agendaResult = await upcomingAgendaRes.json(); }
-              setUpcomingAgenda(agendaResult);
-
-              // ... combinar errores ...
-
+                   setWeatherData(await weatherRes.json());
+               } else {
+                   setError(prev => `${prev ? prev + '; ' : ''}Error clima ${weatherRes.status}`);
+               }
+               // Si upcomingAgenda no vino de SSR o es la primera carga post-autenticación, la cargamos.
+               // La función de refresh se encargará de las actualizaciones posteriores.
+               if (initialUpcomingAgenda === null || upcomingAgenda.length === 0) {
+                   await refreshUpcomingAgendaForDashboard();
+               }
             } catch (err) {
-                console.error("Effect: General fetch error:", err); // <-- Log 8
-                setError(err.message || 'Failed to fetch data.');
+                setError(err.message || 'Failed to fetch dashboard data.');
                 setWeatherData(null);
-                setUpcomingAgenda([]);
             } finally {
-                setLoading(false);
-                setIsSearching(false); // Reset searching state
-                console.log("Effect: Fetch finished."); // <-- Log 9
-        }
+                setLoadingDashboard(false);
+                setIsSearching(false);
+            }
       };
-      fetchDataForTarget();
-  } else {
-      console.log("Effect Condition NOT Met.");
-       // Si no hay target o no está autenticado, asegura no estar cargando
-       // setLoading(false); // Puede causar bucle si se pone aquí?
+      fetchDataForDashboard();
   }
-// Depende de currentLocationTarget (y status para asegurar autenticación)
-}, [currentLocationTarget, status, session]); 
+}, [currentLocationTarget, status, session, initialUpcomingAgenda]);
 
-  
 
   const handleSearch = async (event) => {
-      event.preventDefault(); 
-      const cityToSearch = searchQuery.trim(); // Guarda antes de limpiar
+      event.preventDefault();
+      const cityToSearch = searchQuery.trim();
       if (!cityToSearch || isSearching) return;
-
-      setIsSearching(true); // Indica que estamos en proceso de búsqueda
+      setIsSearching(true);
       setError(null);
       setSearchQuery('');
-  // No ponemos setLoading(true) aquí directamente
-
-      console.log(`HandleSearch: Setting location target to city: ${cityToSearch}`);
-      // --- Actualiza el target para disparar el useEffect de fetch ---
       setCurrentLocationTarget({ city: cityToSearch });
-  }
+  };
       
+   const current = weatherData?.current;
+   const locationInfo = weatherData?.location;
+   const forecastDays = weatherData?.forecast?.forecastday;
 
-   const current = weatherData?.current; // Datos actuales
-   const locationInfo = weatherData?.location; // Info de ubicación
-   const forecastDays = weatherData?.forecast?.forecastday; // Array de días de pronóstico
-
-
-   const nowClientTimestamp = new Date().getTime(); // Milisegundos UTC actuales
-   console.log("--- Filtering Upcoming Agenda ---"); // Start marker
-    console.log("Current Timestamp:", nowClientTimestamp, `(${new Date(nowClientTimestamp).toISOString()})`);
-    console.log("Original upcomingAgenda state:", upcomingAgenda);
-
-    const futureUpcomingAgenda = filterFutureAgendaItemsByEndTime(upcomingAgenda, "[Index Filter]");
-    console.log("Filtered futureUpcomingAgenda:", futureUpcomingAgenda);
-    console.log(`DEBUG [Index Filter]: Total upcoming: ${upcomingAgenda.length}, Filtered future: ${futureUpcomingAgenda.length}`); // Log actualizado
-    console.log("--- End Filtering ---");
-
+   const futureUpcomingAgenda = filterFutureAgendaItemsByEndTime(upcomingAgenda, "[Index Filter]");
      
-   // Pronóstico horario (solo viene para hoy y próximos días, extraemos de hoy)
-   // WeatherAPI devuelve las 24h del día en forecastday[0].hour
    let todayHourlyProcessed = [];
    if (forecastDays && forecastDays[0]?.hour) {
        const currentHour = new Date().getHours();
        todayHourlyProcessed = forecastDays[0].hour
-           .filter(h => new Date(h.time_epoch * 1000).getHours() >= currentHour) // Filtra horas pasadas
-           .slice(0, 8) // Limita a las próximas 8
-           .map(h => ({ // Mapea a la estructura que usaba tu vista
+           .filter(h => new Date(h.time_epoch * 1000).getHours() >= currentHour)
+           .slice(0, 8)
+           .map(h => ({
                time: new Date(h.time_epoch * 1000).getHours(),
                temp: h.temp_c,
-               icon: h.condition.icon, // Puede ser URL completa
+               icon: h.condition.icon,
                description: h.condition.text,
-               pop: h.chance_of_rain // Probabilidad 0-100
+               pop: h.chance_of_rain
            }));
    }
 
    let dailyProcessed = [];
    if (forecastDays && forecastDays.length > 0) {
-       dailyProcessed = forecastDays/*.slice(1)*/ // Quita slice(1) si quieres incluir hoy
+       dailyProcessed = forecastDays
            .map(d => ({
-               date: new Date(d.date_epoch * 1000), // Usa epoch para crear Date
+               date: new Date(d.date_epoch * 1000),
                maxTemp: d.day.maxtemp_c,
-               minTemp: d.day.mintemp_c, // También tenemos mínima
-               icon: d.day.condition.icon, // Puede ser URL completa
+               minTemp: d.day.mintemp_c,
+               icon: d.day.condition.icon,
                description: d.day.condition.text,
            }));
    }
 
    if (status === 'loading') return <div className={styles.loadingText}>Verificando sesión...</div>;
-   if (status === 'unauthenticated') return null; // Redirigiendo
-   if (status === 'loading' || loading) return <div className={styles.loadingText}>Cargando dashboard...</div>;
+   // La redirección ya se maneja en el primer useEffect
+   if (status === 'unauthenticated') return null;
+   // Si estamos cargando datos específicos del dashboard (clima) después de la sesión
+   if (loadingDashboard && !weatherData) return <div className={styles.loadingText}>Cargando dashboard...</div>;
   
 
   return (
     <div className={styles.dashboardContainer}>
       <Head>
         <title>Dashboard del Clima</title>
-        <link rel="preconnect" href="https://fonts.googleapis.com"/>
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous"/>
-        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+        {/* ... otras etiquetas Head ... */}
       </Head>
 
-      {/* --- Sidebar --- */}
       <aside className={styles.sidebar}>
-        <div className={styles.locationHeader}>
-           <div className={styles.locationName}>
-                <span className={styles.locationIcon}>📍</span>
-                 {/* Usa locationInfo o current */}
-                 {locationInfo?.name ? `${locationInfo.name}, ${locationInfo.region}` : 'Buscando...'}
-           </div>
-           <div className={styles.currentDate}>
-                {currentDate.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
-           </div>
-        </div>
-
-         {/* --- USA 'current' aquí --- */}
-         {current ? ( // <--- ¿Usas 'current'?
-            <>
-            <div className={styles.currentWeather}>
-                 {/* ¿Usas current.condition...? */}
-                {current.condition?.icon && <img
-                            // Añade "https:" si la URL del icono de WeatherAPI empieza con "//"
-                            src={current.condition.icon.startsWith('//') ? `https:${current.condition.icon}` : current.condition.icon}
-                            alt={current.condition.text} // Usa texto de condición como alt
-                            className={styles.weatherIcon} // Asegúrate que este estilo exista
-                            width={100} // Puedes añadir tamaño explícito si quieres
-                            height={100}
-                        />}
-                <div className={styles.temperature}>
-                     {/* ¿Usas current.temp_c? */}
-                    {Math.round(current.temp_c ?? 0)}<sup>°C</sup>
+            <div className={styles.sidebarOverlay}></div> {/* Para oscurecer/colorear fondo */}
+            <div className={styles.sidebarContent}> {/* Contenedor para el contenido encima del overlay */}
+                
+                {/* Tarjeta 1: Ubicación y Fecha */}
+                <div className={`${styles.infoCard} ${styles.locationCard}`}>
+                    <div className={styles.locationHeader}>
+                        <span className={styles.locationNameText}>
+                            {locationInfo?.name ? `${locationInfo.name}, ${locationInfo.region}` : (isSearching ? 'Buscando...' : 'Ubicación...')}
+                        </span>
+                    </div>
+                    <div className={styles.currentDateText}>
+                        {currentDate.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' })}
+                    </div>
+                    
+                    
+                        {current.condition?.icon && 
+                            <img
+                                src={current.condition.icon.startsWith('//') ? `https:${current.condition.icon}` : current.condition.icon}
+                                alt={current.condition.text}
+                                className={styles.weatherIconLarge} 
+                            />}
+                        <div className={styles.temperatureLarge}>
+                            {Math.round(current.temp_c ?? 0)}
+                            <sup className={styles.degreeSymbol}>°C</sup>
+                        </div>
+                        <div className={styles.weatherDescriptionLarge}>
+                            {current.condition?.text ?? 'N/A'}
+                        </div>
                 </div>
-                <div className={styles.weatherDescription}>
-                     {/* ¿Usas current.condition.text? */}
-                    {current.condition?.text ?? 'N/A'}
-                </div>
-            </div>
+                
+                <br></br>
+                <br></br>
+                <br></br>
+                <br></br>
+                <br></br>
+                <br></br>
 
-            <ul className={styles.detailsList}>
-                <li className={styles.detailItem}>
-                     {/* ¿Usas todayHourlyProcessed? */}
-                     <span>Precipitación (Prob)</span>
-                     <span>{todayHourlyProcessed[0]?.pop ?? 'N/A'}%</span>
-                </li>
-                <li className={styles.detailItem}>
-                     {/* ¿Usas current.humidity? */}
-                    <span>Humedad</span>
-                    <span>{current.humidity ?? 'N/A'}%</span>
-                    <span>{locationInfo?.name || 'Buscando...'}</span>
-                </li>
-                <li className={styles.detailItem}>
-                     {/* ¿Usas current.wind_kph? */}
-                    <span>Viento</span>
-                    <span>{Math.round(current.wind_kph ?? 0)} km/h</span>
-                </li>
-            </ul>
-            </>
-         ) : (
-             // Mostrar mensaje si no hay datos del clima actual
-             <div className={styles.loadingText} style={{color: 'white', marginTop: '3rem'}}>
-                {isSearching ? 'Buscando...' : (loading ? 'Cargando clima...' : 'Datos no disponibles')}
-             </div>
-        )}
-
-      </aside>
-
-      {/* --- Main Content --- */}
-      <main className={styles.mainContent}>
-        <div className={styles.mainHeader}>
-            <div>   
+                {current ? (
+                    <>
+                        {/* Tarjeta 3: Detalles del Clima */}
+                        <div className={`${styles.infoCard} ${styles.detailsCard}`}>
+                            <h3 className={styles.cardTitle}>Detalles Adicionales</h3>
+                            <ul className={styles.detailsList}>
+                                <li className={styles.detailItem}>
+                                    <span>Precipitación (Prob)</span>
+                                    <span>{todayHourlyProcessed[0]?.pop ?? (current.precip_mm > 0 ? 'Sí' : 'No')}%</span>
+                                </li>
+                                <li className={styles.detailItem}>
+                                    <span>Humedad</span>
+                                    <span>{current.humidity ?? 'N/A'}%</span>
+                                </li>
+                                <li className={styles.detailItem}>
+                                    <span>Viento</span>
+                                    <span>{Math.round(current.wind_kph ?? 0)} km/h</span>
+                                </li>
+                                {/* Puedes añadir más detalles si quieres, como UV Index */}
+                                {current.uv && (
+                                    <li className={styles.detailItem}>
+                                        <span>Índice UV</span>
+                                        <span>{current.uv}</span>
+                                    </li>
+                                )}
+                            </ul>
+                        </div>
+                    </>
+                ) : (
+                    <div className={`${styles.infoCard} ${styles.loadingCard}`}>
+                        <p>
+                            {isSearching ? 'Buscando datos del clima...' : (loadingDashboard ? 'Cargando clima...' : 'Datos de clima no disponibles')}
+                        </p>
+                    </div>
+                )}
                 
             </div>
-           <div>
-            <h1 className={styles.sectionTitle}>Proyecto Ingeniería de Software II</h1>
-           </div>
+        </aside>
+
+      <main className={styles.mainContent}>
+        <div className={styles.mainHeader}>
+            <div></div>
+           <div><h1 className={styles.sectionTitle}>Proyecto Ingeniería de Software II</h1></div>
            <div className={styles.headerActions}>
-             {/* --- Formulario de Búsqueda --- */}
              <form onSubmit={handleSearch} className={styles.searchForm}>
                 <input
                     type="text"
@@ -351,47 +292,30 @@ export default function HomePage({
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className={styles.searchBar}
-                    disabled={isSearching || loading} // Deshabilita mientras busca
+                    disabled={isSearching || loadingDashboard}
                 />
-
-                {loading && <p className={styles.loadingTextSmall}>Actualizando datos...</p>} {/* Indicador general */}
-                {/* Puedes añadir un botón de búsqueda o confiar en Enter */}
-                {/* <button type="submit" disabled={isSearching}>Buscar</button> */}
              </form>
-             {/* --- Fin Formulario de Búsqueda --- */}
-
-             <div className={styles.profileIcon} title={session.user.email}>
-                {session.user.email?.[0]?.toUpperCase()}
-             </div>
+             {session?.user?.email &&
+                <div className={styles.profileIcon} title={session.user.email}>
+                    {session.user.email?.[0]?.toUpperCase()}
+                </div>
+             }
            </div>
         </div>
 
         {error && <p className={styles.errorText} style={{marginBottom:'1rem'}}>Error: {error}</p>}
+        {(loadingDashboard && !weatherData) && <p className={styles.loadingTextSmall}>Actualizando datos...</p>}
 
-        {/* --- Forecast Section --- */}
+
         <section className={styles.forecastSection}>
-            {/* Navegación de Pronóstico (Placeholder funcional) */}
              <nav className={styles.forecastNav}>
-                <button
-                    className={`${styles.navButton} ${forecastViewMode === 'daily' ? styles.navButtonActive : ''}`}
-                    onClick={() => setForecastViewMode('daily')}
-                >
-                    Próximos 7 días
-                </button>
-                <button
-                    className={`${styles.navButton} ${forecastViewMode === 'hourly' ? styles.navButtonActive : ''}`}
-                    onClick={() => setForecastViewMode('hourly')}
-                >
-                    Hoy (por horas)
-                </button>
+                <button className={`${styles.navButton} ${forecastViewMode === 'daily' ? styles.navButtonActive : ''}`} onClick={() => setForecastViewMode('daily')}>Próximos 7 días</button>
+                <button className={`${styles.navButton} ${forecastViewMode === 'hourly' ? styles.navButtonActive : ''}`} onClick={() => setForecastViewMode('hourly')}>Hoy (por horas)</button>
             </nav>
 
-             {error && <p className={styles.errorText}>Error: {error}</p>}
-
-             {loading || isSearching ? (
+             {(loadingDashboard && !weatherData) || isSearching ? (
                 <div className={styles.loadingText}>{isSearching ? 'Buscando...' : 'Cargando pronóstico...'}</div>
             ) : forecastViewMode === 'daily' ? (
-                // Vista Diaria (Usa dailyProcessed)
                 dailyProcessed.length > 0 ? (
                     <div className={styles.forecastGrid}>
                         {dailyProcessed.map((day, index) => (
@@ -399,13 +323,11 @@ export default function HomePage({
                                 <div className={styles.forecastDay}>{formatDay(day.date)}</div>
                                 {day.icon && <img src={day.icon.startsWith('//')?`https:${day.icon}`:day.icon} alt={day.description} className={styles.forecastIcon} />}
                                 <div className={styles.forecastTemp}>{Math.round(day.maxTemp)}<sup>°C</sup></div>
-                                {/* Podrías añadir minTemp: <div className={styles.forecastTempMin}>{Math.round(day.minTemp)}<sup>°C</sup></div> */}
                             </div>
                         ))}
                     </div>
                 ) : !error && <div className={styles.loadingTextSmall}>No hay pronóstico diario.</div>
             ) : (
-                // --- Vista Horaria ---
                 todayHourlyProcessed.length > 0 ? (
                   <div className={styles.forecastGrid}>
                       {todayHourlyProcessed.map((hour, index) => (
@@ -417,84 +339,82 @@ export default function HomePage({
                           </div>
                       ))}
                   </div>
-              ) : (
-                   !error && !loadingWeather && <div className={styles.loadingText}>No hay datos de pronóstico horario disponibles.</div>
-               )
+              ) : !error && !(loadingDashboard && !weatherData) && <div className={styles.loadingText}>No hay datos de pronóstico horario.</div>
             )}
-            {/* --- Fin Renderizado Condicional --- */}
-
         </section>
 
         <section className={styles.upcomingAgendaSection}>
-                 <h2 className={styles.sectionTitle}>Próximas Actividades</h2>
-                 {loading && <p className={styles.loadingTextSmall}>Cargando agenda...</p>}
+            <h2 className={styles.sectionTitle}>Próximas Actividades</h2>
+            {loadingDashboard && upcomingAgenda.length === 0 && <p className={styles.loadingTextSmall}>Cargando agenda...</p>}
+            {!loadingDashboard && futureUpcomingAgenda.length === 0 && !error && (
+                <p className={styles.emptyMessageSmall}>No hay actividades próximas agendadas.</p>
+            )}
+            {!loadingDashboard && futureUpcomingAgenda.length > 0 && (
+                <ul className={styles.upcomingAgendaList}>
+                    {futureUpcomingAgenda.map(item => {
+                        // Usa el estado renombrado para las preferencias
+                        const preference = userPreferencesState[item.activityId?.toString()];
+                        if (!item || !item.id) return null;
+                        return (
+                            <UpcomingAgendaItem
+                                key={item.id}
+                                item={item}
+                                preference={preference}
+                                weatherData={weatherData}
+                            />
+                        );
+                    })}
+                </ul>
+            )}
+            <div className={styles.viewAllLinkContainer}>
+            <button onClick={() => setIsAgendaModalOpen(true)} className={styles.viewAllLink}>
+                Ver toda la agenda →
+            </button>
+            </div>
+        </section>
 
-                 {/* --- CAMBIO AQUÍ: Usa futureUpcomingAgenda --- */}
-                 {!loading && futureUpcomingAgenda.length === 0 && !error && (
-                     <p className={styles.emptyMessageSmall}>No hay actividades próximas agendadas.</p>
-                 )}
-                 {/* --- FIN CAMBIO --- */}
-
-                 {/* --- CAMBIO AQUÍ: Usa futureUpcomingAgenda --- */}
-                 {!loading && futureUpcomingAgenda.length > 0 && (
-                      <ul className={styles.upcomingAgendaList}>
-                          {futureUpcomingAgenda.map(item => { // <-- Itera sobre el array filtrado
-                              const preference = userPreferences[item.activityId?.toString()];
-                              if (!item || !item.id) return null;
-                              console.log("Rendering item:", item.id);
-
-                              return (
-                                  <UpcomingAgendaItem
-                                      key={item.id}
-                                      item={item}
-                                      preference={preference}
-                                      weatherData={weatherData}
-                                  />
-                              );
-                          })}
-                     </ul>
-                 )}
-                 {/* --- FIN CAMBIO --- */}
-
-                 {/* Link Ver toda la agenda (sin cambios) */}
-                 <div className={styles.viewAllLinkContainer}>
-                    <Link href="/agenda" className={styles.viewAllLink}>
-                        Ver toda la agenda →
-                    </Link>
-                  </div>
-             </section>
-
-         {/* --- User Actions / Links --- */}
-         <div className={styles.userActions}>
-              <Link href="/activities" className={styles.actionButton}> {/* Pasa className a Link */}
-                  Actividades {/* Elimina el <a> */}
-              </Link>
-              <Link href="/agenda" className={styles.actionButton}> {/* Pasa className a Link */}
-                 Agenda {/* Elimina el <a> */}
-              </Link>
-              <button onClick={() => signOut({ callbackUrl: '/login' })} className={`${styles.actionButton} ${styles.signOutButton}`}>
-                  Cerrar sesión
-              </button>
-         </div>
-
+          {/* ... (User Actions) ... */}
+       <div className={styles.userActions}>
+            <button onClick={() => setIsActivitiesModalOpen(true)} className={styles.actionButton}>Actividades</button>
+            <button onClick={() => setIsAgendaModalOpen(true)} className={styles.actionButton}>Agenda</button>
+            <button onClick={() => signOut({ callbackUrl: '/login' })} className={`${styles.actionButton} ${styles.signOutButton}`}>Cerrar sesión</button>
+       </div>
       </main>
+
+      {/* --- RENDERIZADO DE MODALES --- */}
+      {session && ( // Solo renderiza modales si hay sesión, para pasarla como prop
+          <>
+            <ActivitiesModal
+                isOpen={isActivitiesModalOpen}
+                onClose={() => setIsActivitiesModalOpen(false)}
+                session={session} // Pasa la sesión
+            />
+            <AgendaModal
+                isOpen={isAgendaModalOpen}
+                onClose={() => {
+                    setIsAgendaModalOpen(false);
+                    refreshUpcomingAgendaForDashboard(); // <--- LLAMAR AL REFRESCO AL CERRAR
+                }}
+                session={session} // Pasa la sesión
+                initialUserLocation={currentLocationTarget} // Pasa la ubicación actual del dashboard
+                initialWeatherData={weatherData} // Pasa los datos del clima del dashboard
+            />
+          </>
+      )}
+      {/* --- FIN RENDERIZADO DE MODALES --- */}
     </div>
   );
 }
 
 
-
-// --- getServerSideProps ---
+// --- getServerSideProps (sin cambios, sigue proveyendo datos iniciales para el dashboard) ---
 export async function getServerSideProps(context) {
   const session = await getSession(context);
   if (!session || !session.user?.id) { return { redirect: { destination: '/login', permanent: false } }; }
-  const userId = BigInt(session.user.id);
 
-  let initialWeatherData = null;
-  let initialUpcomingAgenda = [];
-  let initialUserPreferences = {}; // <-- Inicializa como objeto vacío
-  let initialError = null;
-  let userDefaultLocation = { lat: null, lon: null };
+  let initialUpcomingAgendaData = null; // Cambiado a null por defecto
+  let initialUserPreferencesData = {};
+  let ssrError = null; // Renombrado para evitar conflicto
 
   const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';
   const requestHeaders = { 'Cookie': context.req.headers.cookie || '' };
@@ -505,26 +425,35 @@ export async function getServerSideProps(context) {
         fetch(`${baseUrl}/api/preferences`, { headers: requestHeaders })
     ]);
 
-    // Procesar Agenda
     const agendaSettled = results[0];
-    if (agendaSettled.status === 'fulfilled' && agendaSettled.value?.ok) { initialUpcomingAgenda = await agendaSettled.value.json(); }
-    else if(agendaSettled.value) { initialError = (initialError || '') + `Error Agenda ${agendaSettled.value.status}; `; }
-    else if(agendaSettled.status === 'rejected') { initialError = (initialError || '') + `Error interno Agenda; `; }
+    if (agendaSettled.status === 'fulfilled' && agendaSettled.value?.ok) {
+        initialUpcomingAgendaData = await agendaSettled.value.json();
+    } else if (agendaSettled.status === 'fulfilled') {
+        ssrError = (ssrError || '') + `Error Agenda SSR ${agendaSettled.value.status}; `;
+    } else { 
+        ssrError = (ssrError || '') + `Error interno Agenda SSR; `;
+    }
 
-    // Procesar Preferencias
     const prefsSettled = results[1];
     if (prefsSettled.status === 'fulfilled' && prefsSettled.value?.ok) {
         const prefsData = await prefsSettled.value.json();
-        initialUserPreferences = prefsData.reduce((map, pref) => { map[pref.activityId] = pref; return map; }, {});
-    } else if(prefsSettled.value) { console.warn("SSR: Could not load preferences", prefsSettled.value?.status); }
-     else if(prefsSettled.status === 'rejected') { console.error("SSR: Fetch Prefs rejected:", prefsSettled.reason); }
+        initialUserPreferencesData = prefsData.reduce((map, pref) => { map[pref.activityId.toString()] = pref; return map; }, {});
+    } else { /* ... log warning ... */ }
 
-
-    console.log("SSR: Returning props (Agenda, Prefs only).");
-    return { props: { initialUpcomingAgenda, initialUserPreferences, initialError: initialError?.trim() || null } };
-
-} catch (error) {
-     console.error("SSR: General error:", error);
-     return { props: { initialUpcomingAgenda: [], initialUserPreferences: {}, initialError: 'Error cargando datos del servidor.' } };
-}
+    return { 
+        props: { 
+            initialUpcomingAgenda: initialUpcomingAgendaData, // Pasa null si falló 
+            initialUserPreferences: initialUserPreferencesData, 
+            initialError: ssrError?.trim() || null,
+        } 
+    };
+  } catch (error) {
+     return { 
+        props: { 
+            initialUpcomingAgenda: null, 
+            initialUserPreferences: {}, 
+            initialError: 'Error cargando datos del servidor.',
+        }
+    };
+  }
 }
